@@ -161,19 +161,26 @@ async function seedRevenue(client) {
 }
 
 async function main() {
-  const client = await db.connect();
+  const client = db.createClient(); // Utiliser createClient() au lieu de connect()
 
-  await seedUsers(client);
-  await seedCustomers(client);
-  await seedInvoices(client);
-  await seedRevenue(client);
+  try {
+    await client.connect(); // Connectez-vous au client
 
-  await client.end();
+    await seedUsers(client);
+    await seedCustomers(client);
+    await seedInvoices(client);
+    await seedRevenue(client);
+  } catch (error) {
+    console.error('An error occurred while attempting to seed the database:', error);
+  } finally {
+    await client.end(); // Fermez le client
+  }
 }
 
-main().catch((err) => {
-  console.error(
-    'An error occurred while attempting to seed the database:',
-    err,
-  );
-});
+
+// main().catch((err) => {
+//   console.error(
+//     'An error occurred while attempting to seed the database:',
+//     err,
+//   );
+// });
